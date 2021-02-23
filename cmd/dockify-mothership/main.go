@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/dockifyio/firebase-backend-gateway/api/api"
+	"github.com/dockifyio/dockify-mothership/api/api"
 )
 
 func main() {
