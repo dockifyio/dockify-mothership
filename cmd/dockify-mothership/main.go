@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/dockifyio/dockify-mothership/api/api"
+	"github.com/dockifyio/dockify-mothership/api"
 )
 
 func main() {
