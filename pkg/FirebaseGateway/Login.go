@@ -3,7 +3,6 @@ package FirebaseGateway
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 )
@@ -21,22 +20,23 @@ type FireBaseLoginResponsePayload struct {
 	LocalId      string `json:"localId"`
 }
 
-func (userLoginInfo *UserLogin) LoginWithFirebase(w http.ResponseWriter) error {
+func (userLoginInfo *UserLogin) LoginWithFirebase(w http.ResponseWriter) (FireBaseLoginResponsePayload, int,error) {
 	// call Firebase API to login here
 	//https: //identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=[API_KEY]
+	var fireBaseLoginResponsePayload FireBaseLoginResponsePayload
 	requestBody, err := json.Marshal(map[string]string{
 		"email":             userLoginInfo.Email,
 		"password":          userLoginInfo.Password,
 		"returnSecureToken": "true",
 	})
 	if err != nil {
-		return err
+		return fireBaseLoginResponsePayload, http.StatusInternalServerError, err
 	}
 	fireBaseSignInEndpoint := "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" + "API_TOKEN_HERE"
 	// body := strings.NewReader(`fulladdress=22280+S+209th+Way%2C+Queen+Creek%2C+AZ+85142`)
 	req, err := http.NewRequest("POST", fireBaseSignInEndpoint, bytes.NewBuffer(requestBody))
 	if err != nil {
-		return err
+		return fireBaseLoginResponsePayload, http.StatusInternalServerError, err
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -49,18 +49,24 @@ func (userLoginInfo *UserLogin) LoginWithFirebase(w http.ResponseWriter) error {
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return err
+		return fireBaseLoginResponsePayload, http.StatusInternalServerError, err
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return err
+		return fireBaseLoginResponsePayload, http.StatusInternalServerError, err
 	}
-	// Try to unmarshall the Request endpoint here
-	// and if getting some trouble umarshalling the endpoint return err
-	// to the client if successful unmarshall it and return some of the payload
-	// required as json back to the client
-	fmt.Println(string(body))
+
+	// TODO: Handle the api key with environment variables
+	err = json.Unmarshal(body, &fireBaseLoginResponsePayload)
+	if err != nil {
+		return fireBaseLoginResponsePayload, http.StatusInternalServerError, err
+	}
+	return fireBaseLoginResponsePayload, resp.StatusCode, nil
+	//if resp.StatusCode == 200 {
+	//	return fireBaseLoginResponsePayload, nil
+	//}
+	//fmt.Println(string(body))
 	// resp, err := http.Post(fireBaseSignInEndpoint, "application/json", bytes.NewBuffer(requestBody))
 	// if err != nil {
 	// 	respondWithError(w, http.StatusInternalServerError, "Internal Error calling Firebase Platform")
@@ -88,7 +94,7 @@ func (userLoginInfo *UserLogin) LoginWithFirebase(w http.ResponseWriter) error {
 	// log.Println(string(body))
 
 	// respondWithJSON(w, http.StatusOK, fireBaseLoginPayload)
-	return nil
+	//return nil
 }
 
 

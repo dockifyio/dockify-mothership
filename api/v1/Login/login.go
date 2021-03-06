@@ -16,8 +16,10 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	if err := userLogin.LoginWithFirebase(w); err != nil {
+	fireBaseLoginResponsePayload, statusCode, err := userLogin.LoginWithFirebase(w)
+	if err != nil {
 		Utilities.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
+	Utilities.RespondWithJSON(w, statusCode, fireBaseLoginResponsePayload)
 }
