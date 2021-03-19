@@ -7,6 +7,7 @@ package v1
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"github.com/dockifyio/dockify-mothership/api/v1/Login"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
@@ -16,12 +17,12 @@ import (
 )
 
 type UserLoginMock struct {
-	Email    string
-	Password string
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 type BadPayloadUserLoginMock struct {
-	Email    string
+	Email    string	`json:"email"`
 }
 
 type FireBaseLoginResponsePayloadMock struct {
@@ -30,6 +31,10 @@ type FireBaseLoginResponsePayloadMock struct {
 	RefreshToken string `json:"refreshToken"`
 	ExpiresIn    string `json:"expiresIn"`
 	LocalId      string `json:"localId"`
+}
+
+type FireBaseLoginBadRequestResponsePayloadMock struct {
+	Error string `json:"error"`
 }
 
 var loginUrl = "localhost:8080/v1/login"
@@ -66,8 +71,10 @@ func TestLoginUserBadCredentials(t *testing.T){
 // Test for login user with bad payload: client error
 func TestLoginUserBadPayload(t *testing.T){
 	var fireBaseLoginResponsePayload FireBaseLoginResponsePayloadMock
-	userLoginMockPadPayload := BadPayloadUserLoginMock{Email: "test@gmail.com"}
-	requestBody, err := json.Marshal(userLoginMockPadPayload)
+	var fireBaseLoginBadRequestResponsePayloadMock FireBaseLoginBadRequestResponsePayloadMock
+
+	userLoginMockBadPayload := BadPayloadUserLoginMock{Email: "test@gmail.com"}
+	requestBody, err := json.Marshal(userLoginMockBadPayload)
 	assert.Nil(t, err, "Couldn't marshall user login mock object:")
 
 	req, err := http.NewRequest("POST", loginUrl, bytes.NewBuffer(requestBody))
@@ -75,22 +82,31 @@ func TestLoginUserBadPayload(t *testing.T){
 
 	rec := httptest.NewRecorder()
 	Login.LoginUser(rec, req)
+	//rec := httptest.NewRecorder()
+	//handler := http.HandlerFunc(Login.LoginUser)
 
+	//handler.ServeHTTP(rec, req)
+	fmt.Printf("%d - %s", rec.Code, rec.Body.String())
 	res := rec.Result()
 	defer res.Body.Close()
 
 	assert.Equal(t, http.StatusBadRequest, res.StatusCode, "Expected status bad request as the status code")
 	// check the payload response here as well make sure
 	body, err := ioutil.ReadAll(res.Body)
+	//fmt.Println(string(body))
 	assert.Nil(t, err, "Error with payload response:")
 
 	err = json.Unmarshal(body, &fireBaseLoginResponsePayload)
+	// expect it to be nil
 	assert.Nil(t, err, "Couldn't unmarshall firebaselogin response payload:")
 	assert.Equal(t, "", fireBaseLoginResponsePayload.Email, "Expected return type of email to be empty string")
 	assert.Equal(t, "", fireBaseLoginResponsePayload.IdToken, "Expected return type of IdToken to be empty string")
 	assert.Equal(t, "", fireBaseLoginResponsePayload.RefreshToken, "Expected return type of RefreshToken to be empty string")
 	assert.Equal(t, "", fireBaseLoginResponsePayload.ExpiresIn, "Expected return type of ExpiresIn to be empty string")
 	assert.Equal(t, "", fireBaseLoginResponsePayload.LocalId, "Expected return type of LocalId to be empty string")
+
+	err = json.Unmarshal(body, &fireBaseLoginBadRequestResponsePayloadMock)
+	assert.Equal(t, "", fireBaseLoginBadRequestResponsePayloadMock.Error, "Expected invalid request payload with Bad payload on login")
 }
 
 // TODO: Test for login user with correct credentials and payload: happy path
