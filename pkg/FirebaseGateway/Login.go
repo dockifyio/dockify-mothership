@@ -32,7 +32,7 @@ func (userLoginInfo *UserLogin) LoginWithFirebase(w http.ResponseWriter) (FireBa
 	if err != nil {
 		return fireBaseLoginResponsePayload, http.StatusInternalServerError, err
 	}
-	fireBaseSignInEndpoint := "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" + "***REMOVED***"
+	fireBaseSignInEndpoint := "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" + "API_TOKEN_HERE"
 	// body := strings.NewReader(`fulladdress=22280+S+209th+Way%2C+Queen+Creek%2C+AZ+85142`)
 	req, err := http.NewRequest("POST", fireBaseSignInEndpoint, bytes.NewBuffer(requestBody))
 	if err != nil {
