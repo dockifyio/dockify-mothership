@@ -3,6 +3,7 @@ package FirebaseGateway
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/http"
 )
@@ -18,6 +19,13 @@ type FireBaseLoginResponsePayload struct {
 	RefreshToken string `json:"refreshToken"`
 	ExpiresIn    string `json:"expiresIn"`
 	LocalId      string `json:"localId"`
+}
+
+func (userLoginInfo *UserLogin) ValidateLoginUserInput() error {
+	if userLoginInfo.Email == "" || userLoginInfo.Password == "" {
+		errors.New("Invalid user input")
+	}
+	return nil
 }
 
 func (userLoginInfo *UserLogin) LoginWithFirebase(w http.ResponseWriter) (FireBaseLoginResponsePayload, int,error) {
