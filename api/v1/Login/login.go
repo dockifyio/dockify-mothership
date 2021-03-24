@@ -15,6 +15,11 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
+	err := userLogin.ValidateLoginUserInput()
+	if err := decoder.Decode(&userLogin); err != nil {
+		Utilities.RespondWithError(w, http.StatusBadRequest, "Invalid request payload")
+		return
+	}
 
 	fireBaseLoginResponsePayload, statusCode, err := userLogin.LoginWithFirebase(w)
 	if err != nil {
