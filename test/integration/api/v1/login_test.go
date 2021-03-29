@@ -45,6 +45,8 @@ var loginUrl = "localhost:8080/v1/login"
 // Simple test for logging in user with bad credentials: potentially user error
 func TestLoginUserBadCredentials(t *testing.T){
 	var fireBaseLoginResponsePayload FireBaseLoginResponsePayloadMock
+	var fireBaseLoginBadRequestResponsePayloadMock FireBaseLoginBadRequestResponsePayloadMock
+
 	userLoginMock := UserLoginMock{Email: "test@gmail.com", Password: "testing123"}
 	requestBody, err := json.Marshal(userLoginMock)
 	assert.Nil(t, err, "Couldn't marshall user login mock object")
@@ -69,6 +71,9 @@ func TestLoginUserBadCredentials(t *testing.T){
 	assert.Equal(t, "", fireBaseLoginResponsePayload.RefreshToken, "Expected return type of RefreshToken to be empty string")
 	assert.Equal(t, "", fireBaseLoginResponsePayload.ExpiresIn, "Expected return type of ExpiresIn to be empty string")
 	assert.Equal(t, "", fireBaseLoginResponsePayload.LocalId, "Expected return type of LocalId to be empty string")
+
+	err = json.Unmarshal(body, &fireBaseLoginBadRequestResponsePayloadMock)
+	assert.Equal(t, "", fireBaseLoginBadRequestResponsePayloadMock.Error, "Expected invalid request payload with Bad payload on login")
 }
 
 // Test for login user with bad payload: client error

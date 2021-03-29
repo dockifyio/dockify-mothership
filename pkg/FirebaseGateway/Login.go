@@ -23,12 +23,12 @@ type FireBaseLoginResponsePayload struct {
 
 func (userLoginInfo *UserLogin) ValidateLoginUserInput() error {
 	if userLoginInfo.Email == "" || userLoginInfo.Password == "" {
-		errors.New("Invalid user input")
+		return errors.New("invalid user input")
 	}
 	return nil
 }
 
-func (userLoginInfo *UserLogin) LoginWithFirebase(w http.ResponseWriter) (FireBaseLoginResponsePayload, int,error) {
+func (userLoginInfo *UserLogin) LoginWithFirebase() (FireBaseLoginResponsePayload, int,error) {
 	// call Firebase API to login here
 	//https: //identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=[API_KEY]
 	var fireBaseLoginResponsePayload FireBaseLoginResponsePayload
