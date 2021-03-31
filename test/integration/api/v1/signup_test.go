@@ -116,3 +116,40 @@ func TestSignUpUserRandomPayload(t *testing.T){
 }
 
 // Test for signup user with the same credentials
+func TestSignUpUserSameCredentials(t *testing.T) {
+	var fireBaseSignUpResponsePayload FireBaseSignUpResponsePayloadMock
+	var fireBaseSignUpBadRequestResponsePayloadMock FireBaseSignUpBadRequestResponsePayloadMock
+
+	userSignUpMockBadPayload := SignUpMock{Email: SignUpUserResponsePayload.Email, Password: "testing1234"}
+	requestBody, err := json.Marshal(userSignUpMockBadPayload)
+	assert.Nil(t, err, "Couldn't marshall user signup mock object:")
+
+	req, err := http.NewRequest("POST", signUpUrl, bytes.NewBuffer(requestBody))
+	assert.Nil(t, err, "Failure while making a new POST request:")
+
+	rec := httptest.NewRecorder()
+	SignUp.SignUpUser(rec, req)
+	//rec := httptest.NewRecorder()
+
+	//handler.ServeHTTP(rec, req)
+	res := rec.Result()
+	defer res.Body.Close()
+
+	assert.Equal(t, http.StatusBadRequest, res.StatusCode, "Expected status bad request as the status code")
+	// check the payload response here as well make sure
+	body, err := ioutil.ReadAll(res.Body)
+	//fmt.Println(string(body))
+	assert.Nil(t, err, "Error with payload response:")
+
+	err = json.Unmarshal(body, &fireBaseSignUpResponsePayload)
+	// expect it to be nil
+	assert.Nil(t, err, "Couldn't unmarshall signup response payload:")
+	assert.Equal(t, "", fireBaseSignUpResponsePayload.Email, "Expected return type of email to be empty string")
+	assert.Equal(t, "", fireBaseSignUpResponsePayload.IdToken, "Expected return type of IdToken to be empty string")
+	assert.Equal(t, "", fireBaseSignUpResponsePayload.RefreshToken, "Expected return type of RefreshToken to be empty string")
+	assert.Equal(t, "", fireBaseSignUpResponsePayload.ExpiresIn, "Expected return type of ExpiresIn to be empty string")
+	assert.Equal(t, "", fireBaseSignUpResponsePayload.LocalId, "Expected return type of LocalId to be empty string")
+
+	err = json.Unmarshal(body, &fireBaseSignUpBadRequestResponsePayloadMock)
+	assert.Equal(t, "", fireBaseSignUpBadRequestResponsePayloadMock.Error, "Expected Error to be none")
+}

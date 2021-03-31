@@ -156,4 +156,36 @@ func TestLoginUserRandomPayload(t *testing.T){
 	assert.Equal(t, "Invalid request payload", fireBaseLoginBadRequestResponsePayloadMock.Error, "Expected invalid request payload with Bad payload on login")
 }
 
-// TODO: Test for login user with correct credentials and payload: happy path
+// Test for login user with correct credentials and payload: happy path
+func TestLoginUserGoodCredentials(t *testing.T){
+	var fireBaseLoginResponsePayload FireBaseLoginResponsePayloadMock
+	var fireBaseLoginBadRequestResponsePayloadMock FireBaseLoginBadRequestResponsePayloadMock
+
+	userLoginMock := UserLoginMock{Email: SignUpUserResponsePayload.Email, Password: "testing123"}
+	requestBody, err := json.Marshal(userLoginMock)
+	assert.Nil(t, err, "Couldn't marshall user login mock object")
+	req, err := http.NewRequest("POST", loginUrl, bytes.NewBuffer(requestBody))
+	assert.Nil(t, err, "Failure while making a new POST request:")
+	rec := httptest.NewRecorder()
+	Login.LoginUser(rec, req)
+
+	res := rec.Result()
+	defer res.Body.Close()
+
+	assert.Equal(t, http.StatusOK, res.StatusCode, "Expected status ok as the status code")
+	// check the payload response here as well make sure
+	body, err := ioutil.ReadAll(res.Body)
+	assert.Nil(t, err, "Error with payload response")
+
+	err = json.Unmarshal(body, &fireBaseLoginResponsePayload)
+	assert.Nil(t, err, "Couldn't unmarshall firebaselogin response payload:" )
+
+	assert.NotNil(t, fireBaseLoginResponsePayload.Email, "Expected return type of email to be not empty string")
+	assert.NotNil(t, fireBaseLoginResponsePayload.IdToken, "Expected return type of IdToken to not be empty string")
+	assert.NotNil(t, fireBaseLoginResponsePayload.RefreshToken, "Expected return type of RefreshToken to not be empty string")
+	assert.NotNil(t, fireBaseLoginResponsePayload.ExpiresIn, "Expected return type of ExpiresIn to not be empty string")
+	assert.NotNil(t, fireBaseLoginResponsePayload.LocalId, "Expected return type of LocalId to not be empty string")
+
+	err = json.Unmarshal(body, &fireBaseLoginBadRequestResponsePayloadMock)
+	assert.Equal(t, "", fireBaseLoginBadRequestResponsePayloadMock.Error, "Didn't expect invalid request payload with Bad payload on login")
+}
