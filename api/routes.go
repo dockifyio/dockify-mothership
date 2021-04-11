@@ -1,13 +1,13 @@
 package api
 
 import (
+	"github.com/dockifyio/dockify-mothership/api/v1/Account"
 	"github.com/dockifyio/dockify-mothership/api/v1/Login"
 	"github.com/dockifyio/dockify-mothership/api/v1/SignUp"
-	"github.com/dockifyio/dockify-mothership/api/v1/Account"
 )
 
-func (a *App) initializeRoutes() {
-	a.Router.HandleFunc("/v1/login", Login.LoginUser).Methods("POST")
-	a.Router.HandleFunc("/v1/signup", SignUp.SignUpUser).Methods("POST")
-	a.Router.HandleFunc("/v1/deleteaccount", Account.DeleteAccount).Methods("POST")
+func (a *App) initializeRoutes(fireBaseApiKey string) {
+	a.Router.Handle("/v1/login", &Login.LoginHandler{FireBaseApiKey: fireBaseApiKey}).Methods("POST")
+	a.Router.Handle("/v1/signup", &SignUp.SignUpHandler{FireBaseApiKey: fireBaseApiKey}).Methods("POST")
+	a.Router.Handle("/v1/deleteaccount", &Account.DeleteAccountHandler{FireBaseApiKey: fireBaseApiKey}).Methods("POST")
 }

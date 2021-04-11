@@ -51,7 +51,11 @@ func TestSignUpUserBadPayload(t *testing.T){
 	assert.Nil(t, err, "Failure while making a new POST request:")
 
 	rec := httptest.NewRecorder()
-	SignUp.SignUpUser(rec, req)
+	signUpHandler := &SignUp.SignUpHandler{
+		FireBaseApiKey: FirebaseApiKey,
+	}
+
+	signUpHandler.ServeHTTP(rec,req)
 
 	//handler.ServeHTTP(rec, req)
 	res := rec.Result()
@@ -89,7 +93,11 @@ func TestSignUpUserRandomPayload(t *testing.T){
 	assert.Nil(t, err, "Failure while making a new POST request:")
 
 	rec := httptest.NewRecorder()
-	SignUp.SignUpUser(rec, req)
+	signUpHandler := &SignUp.SignUpHandler{
+		FireBaseApiKey: FirebaseApiKey,
+	}
+
+	signUpHandler.ServeHTTP(rec,req)
 	//rec := httptest.NewRecorder()
 
 	//handler.ServeHTTP(rec, req)
@@ -128,7 +136,11 @@ func TestSignUpUserSameCredentials(t *testing.T) {
 	assert.Nil(t, err, "Failure while making a new POST request:")
 
 	rec := httptest.NewRecorder()
-	SignUp.SignUpUser(rec, req)
+	signUpHandler := &SignUp.SignUpHandler{
+		FireBaseApiKey: FirebaseApiKey,
+	}
+
+	signUpHandler.ServeHTTP(rec,req)
 	//rec := httptest.NewRecorder()
 
 	//handler.ServeHTTP(rec, req)

@@ -15,6 +15,8 @@ import (
 
 var SignUpUserResponsePayload FireBaseSignUpResponsePayloadMock
 var deleteAccountUrl = "localhost:8080/v1/deleteaccount"
+var VaultAddr string
+var FirebaseApiKey string
 
 type DeleteAccountMockRequest struct {
 	IDToken string
@@ -39,7 +41,11 @@ func signUpUser()  {
 	}
 
 	rec := httptest.NewRecorder()
-	SignUp.SignUpUser(rec, req)
+	signUpHandler := &SignUp.SignUpHandler{
+		FireBaseApiKey: FirebaseApiKey,
+	}
+
+	signUpHandler.ServeHTTP(rec,req)
 
 	//handler.ServeHTTP(rec, req)
 	res := rec.Result()
@@ -124,7 +130,11 @@ func deleteAccount() {
 	}
 
 	rec := httptest.NewRecorder()
-	Account.DeleteAccount(rec, req)
+	deleteAccountHandler := &Account.DeleteAccountHandler{
+		FireBaseApiKey: FirebaseApiKey,
+	}
+
+	deleteAccountHandler.ServeHTTP(rec,req)
 
 	//handler.ServeHTTP(rec, req)
 	res := rec.Result()
@@ -149,6 +159,8 @@ func setup() {
 	// Do something here.
 	fmt.Printf("\033[1;36m%s\033[0m", "> Setting up test conditions\n")
 	fmt.Printf("\033[1;36m%s\033[0m", "> Signing up a new user\n")
+	// initialize vault addresses
+	FirebaseApiKey = os.Getenv("FIREBASE_API")
 	signUpUser()
 	fmt.Printf("\033[1;36m%s\033[0m", "> Test user was created sucessfully for use	\n")
 	fmt.Printf("\033[1;36m%s\033[0m", "> Setup completed\n")

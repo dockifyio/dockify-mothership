@@ -53,7 +53,11 @@ func TestLoginUserBadCredentials(t *testing.T){
 	req, err := http.NewRequest("POST", loginUrl, bytes.NewBuffer(requestBody))
 	assert.Nil(t, err, "Failure while making a new POST request:")
 	rec := httptest.NewRecorder()
-	Login.LoginUser(rec, req)
+	loginHandler := &Login.LoginHandler{
+		FireBaseApiKey: FirebaseApiKey,
+	}
+
+	loginHandler.ServeHTTP(rec,req)
 
 	res := rec.Result()
 	defer res.Body.Close()
@@ -89,7 +93,11 @@ func TestLoginUserBadPayload(t *testing.T){
 	assert.Nil(t, err, "Failure while making a new POST request:")
 
 	rec := httptest.NewRecorder()
-	Login.LoginUser(rec, req)
+	loginHandler := &Login.LoginHandler{
+		FireBaseApiKey: FirebaseApiKey,
+	}
+
+	loginHandler.ServeHTTP(rec,req)
 	//rec := httptest.NewRecorder()
 	//handler := http.HandlerFunc(Login.LoginUser)
 
@@ -129,7 +137,11 @@ func TestLoginUserRandomPayload(t *testing.T){
 	assert.Nil(t, err, "Failure while making a new POST request:")
 
 	rec := httptest.NewRecorder()
-	Login.LoginUser(rec, req)
+	loginHandler := &Login.LoginHandler{
+		FireBaseApiKey: FirebaseApiKey,
+	}
+
+	loginHandler.ServeHTTP(rec,req)
 	//rec := httptest.NewRecorder()
 	//handler := http.HandlerFunc(Login.LoginUser)
 
@@ -167,7 +179,11 @@ func TestLoginUserGoodCredentials(t *testing.T){
 	req, err := http.NewRequest("POST", loginUrl, bytes.NewBuffer(requestBody))
 	assert.Nil(t, err, "Failure while making a new POST request:")
 	rec := httptest.NewRecorder()
-	Login.LoginUser(rec, req)
+	loginHandler := &Login.LoginHandler{
+		FireBaseApiKey: FirebaseApiKey,
+	}
+
+	loginHandler.ServeHTTP(rec,req)
 
 	res := rec.Result()
 	defer res.Body.Close()

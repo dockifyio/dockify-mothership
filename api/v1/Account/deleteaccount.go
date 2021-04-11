@@ -7,7 +7,11 @@ import (
 	"net/http"
 )
 
-func DeleteAccount(w http.ResponseWriter, r *http.Request) {
+type DeleteAccountHandler struct {
+	FireBaseApiKey string
+}
+
+func (deleteAccountHandler *DeleteAccountHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var deleteFirebaseAccount FirebaseGateway.DeleteFirebaseAccount
 	var fireBaseDeleteAccountResponsePayload FirebaseGateway.FireBaseDeleteAccountResponsePayload
 	decoder := json.NewDecoder(r.Body)
@@ -24,7 +28,7 @@ func DeleteAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	statusCode, err := deleteFirebaseAccount.DeleteFirebaseAccount()
+	statusCode, err := deleteFirebaseAccount.DeleteFirebaseAccount(deleteAccountHandler.FireBaseApiKey)
 	if err != nil {
 		Utilities.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return

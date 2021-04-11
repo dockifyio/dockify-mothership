@@ -7,7 +7,11 @@ import (
 	"net/http"
 )
 
-func SignUpUser(w http.ResponseWriter, r *http.Request) {
+type SignUpHandler struct {
+	FireBaseApiKey string
+}
+
+func (signUpHandler *SignUpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var userSignUp FirebaseGateway.SignUp
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&userSignUp); err != nil {
@@ -22,10 +26,11 @@ func SignUpUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fireBaseLoginResponsePayload, statusCode, err := userSignUp.SignUpWithFirebaseEmailAndPassword()
+	fireBaseLoginResponsePayload, statusCode, err := userSignUp.SignUpWithFirebaseEmailAndPassword(signUpHandler.FireBaseApiKey)
 	if err != nil {
 		Utilities.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 	Utilities.RespondWithJSON(w, statusCode, fireBaseLoginResponsePayload)
+
 }

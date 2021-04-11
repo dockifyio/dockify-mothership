@@ -10,10 +10,10 @@ type App struct {
 	Router *mux.Router
 }
 
-func (a *App) Initialize() {
+func (a *App) Initialize(fireBaseApiKey string) {
 	a.Router = mux.NewRouter()
 
-	a.initializeRoutes()
+	a.initializeRoutes(fireBaseApiKey)
 }
 
 func (a *App) Run() {

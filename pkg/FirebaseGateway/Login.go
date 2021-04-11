@@ -28,7 +28,7 @@ func (userLoginInfo *UserLogin) ValidateLoginUserInput() error {
 	return nil
 }
 
-func (userLoginInfo *UserLogin) LoginWithFirebase() (FireBaseLoginResponsePayload, int,error) {
+func (userLoginInfo *UserLogin) LoginWithFirebase(fireBaseApiKey string) (FireBaseLoginResponsePayload, int,error) {
 	// call Firebase API to login here
 	//https: //identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=[API_KEY]
 	var fireBaseLoginResponsePayload FireBaseLoginResponsePayload
@@ -40,7 +40,7 @@ func (userLoginInfo *UserLogin) LoginWithFirebase() (FireBaseLoginResponsePayloa
 	if err != nil {
 		return fireBaseLoginResponsePayload, http.StatusInternalServerError, err
 	}
-	fireBaseSignInEndpoint := "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" + "API_TOKEN_HERE"
+	fireBaseSignInEndpoint := "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" + fireBaseApiKey
 	// body := strings.NewReader(`fulladdress=22280+S+209th+Way%2C+Queen+Creek%2C+AZ+85142`)
 	req, err := http.NewRequest("POST", fireBaseSignInEndpoint, bytes.NewBuffer(requestBody))
 	if err != nil {

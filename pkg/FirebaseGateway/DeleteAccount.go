@@ -23,7 +23,7 @@ func (deleteAccountInfo *DeleteFirebaseAccount) ValidateDeleteAccountInput() err
 	return nil
 }
 
-func (deleteAccountInfo *DeleteFirebaseAccount) DeleteFirebaseAccount() (int,error) {
+func (deleteAccountInfo *DeleteFirebaseAccount) DeleteFirebaseAccount(fireBaseApiKey string) (int,error) {
 	// call Firebase API to Delete account here
 	requestBody, err := json.Marshal(map[string]string{
 		"idToken": deleteAccountInfo.IDToken,
@@ -31,7 +31,7 @@ func (deleteAccountInfo *DeleteFirebaseAccount) DeleteFirebaseAccount() (int,err
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
-	fireBaseDeleteAccountEndpoint := "https://identitytoolkit.googleapis.com/v1/accounts:delete?key=" + "API_TOKEN_HERE"
+	fireBaseDeleteAccountEndpoint := "https://identitytoolkit.googleapis.com/v1/accounts:delete?key=" + fireBaseApiKey
 
 	req, err := http.NewRequest("POST", fireBaseDeleteAccountEndpoint, bytes.NewBuffer(requestBody))
 	if err != nil {
