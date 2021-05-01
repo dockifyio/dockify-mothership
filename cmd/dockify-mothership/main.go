@@ -21,8 +21,14 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 		fmt.Println("Couldn't initialize vault client")
+		os.Exit(1)
 	}
 	fireBaseApiKey, err := Utilities.GetValuesFromVaultV2Api(vaultClient, vaultToken, fireBaseApiVaultPath, fireBaseApiKeyName)
+	if err != nil {
+		fmt.Println(err)
+		fmt.Println("Couldn't get values from vault v2 api for firebase api key")
+		os.Exit(1)
+	}
 	app.Initialize(fireBaseApiKey)
 	app.Run()
 }
