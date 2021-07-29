@@ -32,5 +32,5 @@ func (signUpHandler *SignUpHandler) ServeHTTP(w http.ResponseWriter, r *http.Req
 		return
 	}
 	Utilities.RespondWithJSON(w, statusCode, fireBaseLoginResponsePayload)
-
+	// after responding we can setup the messaging queues
 }
